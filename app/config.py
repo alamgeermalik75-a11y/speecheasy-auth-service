@@ -36,8 +36,8 @@ class Settings(BaseSettings):
     SMTP_USE_TLS: bool = True
 
     # URLs
-    FRONTEND_URL: str = "http://localhost:5000"
-    BACKEND_URL: str = "http://127.0.0.1:8001"
+    FRONTEND_URL: str = "speecheasy://app"
+    BACKEND_URL: str = "https://speecheasy-auth-service-production.up.railway.app"
 
     # CORS
     CORS_ORIGINS: Union[List[str], str] = ["*"]
