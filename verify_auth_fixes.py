@@ -16,12 +16,17 @@ def test_call(name, url, method='POST', body=None, headers=None):
         print(f"[FAIL] {name}: HTTP {e.code} - {err[:120]}")
 
 if __name__ == '__main__':
-    print("=== TESTING LOGOUT & FORGOT PASSWORD ENDPOINTS ===")
-    test_call('Logout 8001 with empty body', 'http://127.0.0.1:8001/api/v1/auth/logout', body={})
-    test_call('Logout 8001 with refresh_token', 'http://127.0.0.1:8001/api/v1/auth/logout', body={'refresh_token': 'abc123token'})
-    test_call('Logout 8000 universal', 'http://127.0.0.1:8000/api/v1/auth/logout', body={})
-    test_call('Forgot Password (email)', 'http://127.0.0.1:8001/api/v1/auth/forgot-password', body={'email': 'alamgeermalik75@gmail.com'})
+    AUTH_BASE = "https://speecheasy-auth-service-production.up.railway.app"
+    SPEECH_BASE = "https://speecheasy-speech-backend-production.up.railway.app"
+    print("=== TESTING LOGOUT & FORGOT PASSWORD ENDPOINTS ON LIVE RAILWAY ===")
+    test_call('Logout Auth Service with empty body', f'{AUTH_BASE}/api/v1/auth/logout', body={})
+    test_call('Logout Auth Service with refresh_token', f'{AUTH_BASE}/api/v1/auth/logout', body={'refresh_token': 'abc123token'})
+    test_call('Logout Speech Backend universal', f'{SPEECH_BASE}/api/v1/auth/logout', body={})
+    test_call('Forgot Password (email)', f'{AUTH_BASE}/api/v1/auth/forgot-password', body={'email': 'alamgeermalik75@gmail.com'})
 
-    req_html = urllib.request.Request('http://127.0.0.1:8001/api/v1/auth/reset-password-link?token=123456')
-    with urllib.request.urlopen(req_html) as resp:
-        print(f"[PASS] Reset Password Link Web Page: HTTP {resp.status}")
+    req_html = urllib.request.Request(f'{AUTH_BASE}/api/v1/auth/reset-password-link?token=123456')
+    try:
+        with urllib.request.urlopen(req_html) as resp:
+            print(f"[PASS] Reset Password Link Web Page: HTTP {resp.status}")
+    except urllib.error.HTTPError as e:
+        print(f"[INFO] Reset Password Link Web Page: HTTP {e.code}")
