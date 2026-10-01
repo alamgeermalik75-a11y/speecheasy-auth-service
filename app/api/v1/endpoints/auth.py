@@ -284,7 +284,7 @@ async def reset_password_link(token: str = Query(..., description="6-digit reset
                     errBox.style.display = 'block';
                     return;
                 }}
-                if (pwd.length < 8 || !/[A-Za-z]/.test(pwd) || !/\d/.test(pwd)) {{
+                if (pwd.length < 8 || !/[A-Za-z]/.test(pwd) || !/\\d/.test(pwd)) {{
                     errBox.innerText = 'Password must be at least 8 characters and contain both letters and numbers.';
                     errBox.style.display = 'block';
                     return;
