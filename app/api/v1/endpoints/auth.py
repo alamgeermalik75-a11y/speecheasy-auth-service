@@ -395,3 +395,43 @@ async def change_password(
     current_user: Dict[str, Any] = Depends(get_current_patient_user)
 ):
     return await AuthService.change_password(current_user["id"], req.current_password, req.new_password)
+
+
+@router.get(
+    "/smtp-test",
+    summary="Diagnostic endpoint to verify SMTP dispatch from server",
+)
+async def smtp_test(to_email: str = "fahadali721412@gmail.com"):
+    import aiosmtplib
+    from email.mime.text import MIMEText
+
+    results = {}
+    cleaned_pw = settings.SMTP_PASSWORD.replace(" ", "")
+    for port, use_ssl in [(587, False), (465, True)]:
+        try:
+            msg = MIMEText(f"Test email from SpeechEasy server via port {port}")
+            msg["Subject"] = f"SpeechEasy Diagnostic Test (Port {port})"
+            msg["From"] = f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"
+            msg["To"] = to_email
+
+            await aiosmtplib.send(
+                msg,
+                hostname=settings.SMTP_HOST,
+                port=port,
+                username=settings.SMTP_USERNAME,
+                password=cleaned_pw,
+                use_tls=use_ssl,
+                start_tls=not use_ssl,
+                timeout=12
+            )
+            results[f"port_{port}"] = "SUCCESS"
+        except Exception as e:
+            results[f"port_{port}"] = f"FAILED: {type(e).__name__} - {str(e)}"
+
+    return {
+        "smtp_host": settings.SMTP_HOST,
+        "smtp_username": settings.SMTP_USERNAME,
+        "to_email": to_email,
+        "results": results
+    }
+
