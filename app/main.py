@@ -106,15 +106,6 @@ async def general_exception_handler(request: Request, exc: Exception):
     )
 
 
-@app.middleware("http")
-async def vercel_path_rewrite_middleware(request: Request, call_next):
-    matched_path = request.headers.get("x-matched-path")
-    if matched_path and request.scope.get("path") in ("/api/index.py", "/api/index", "/api/index/"):
-        clean_path = matched_path.split("?")[0]
-        request.scope["path"] = clean_path
-    return await call_next(request)
-
-
 # Include API v1 router
 app.include_router(api_router, prefix="/api/v1")
 
@@ -126,17 +117,6 @@ async def root():
         "version": "1.0.0",
         "status": "healthy",
         "docs": "/docs"
-    }
-
-
-@app.get("/api/index.py", include_in_schema=False)
-@app.get("/api/index", include_in_schema=False)
-async def vercel_index(request: Request):
-    return {
-        "service": "SpeechEasy Patient Auth & Profile API",
-        "scope_path": request.scope.get("path"),
-        "headers": dict(request.headers),
-        "url": str(request.url),
     }
 
 
