@@ -131,13 +131,12 @@ async def root():
 
 @app.get("/api/index.py", include_in_schema=False)
 @app.get("/api/index", include_in_schema=False)
-async def vercel_index():
+async def vercel_index(request: Request):
     return {
         "service": "SpeechEasy Patient Auth & Profile API",
-        "version": "1.0.0",
-        "status": "healthy",
-        "docs": "/docs",
-        "platform": "Vercel Serverless"
+        "scope_path": request.scope.get("path"),
+        "headers": dict(request.headers),
+        "url": str(request.url),
     }
 
 
